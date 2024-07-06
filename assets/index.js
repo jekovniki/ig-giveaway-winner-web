@@ -45,22 +45,43 @@ function displayTotalContestants(count) {
   resultBox.innerHTML = `Total contestants: <strong>${count}</strong>`;
 }
 
-function extractContestants(ulMatches) {
+function extractContestants(ulMatches, uniqueContestants) {
   const contestants = [];
   const aRegex = /<a\b[^>]*>([\s\S]*?)<\/a>/gi;
+  const timeRegex = /<time\s+class\s*=\s*["']([^"']*)["']/i;
 
   ulMatches.forEach((ul) => {
     let match;
-    let i = 0;
     while ((match = aRegex.exec(ul))) {
-      if (i === 1) {
-        contestants.push(match[1].replace(/<\/?[^>]+(>|$)/g, "").trim());
+      const contestantHtml = match[0]; // Full HTML of the <a> tag
+      if (timeRegex.test(contestantHtml)) {
+        continue; // Skip if <time> tag with class is found
       }
-      i++;
+
+      const contestant = match[1].replace(/<\/?[^>]+(>|$)/g, "").trim();
+      if (isValidContestant(contestant, uniqueContestants, contestants)) {
+        contestants.push(contestant);
+      }
     }
   });
 
   return contestants;
+}
+
+function isValidContestant(contestant, uniqueContestants, existingContestants) {
+  // Check length and character validity
+  if (
+    contestant.length > 1 &&
+    contestant.length < 30 &&
+    /^[a-zA-Z0-9.]*$/.test(contestant)
+  ) {
+    // Check uniqueness if required
+    if (uniqueContestants && existingContestants.includes(contestant)) {
+      return false; // Not unique and should be skipped
+    }
+    return true;
+  }
+  return false; // Does not meet criteria
 }
 
 function pickRandomWinners(contestants, numberOfWinners) {
