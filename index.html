@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Instagram giveaway winner</title>
+    <link rel="stylesheet" href="./assets/index.css" />
+    <script src="assets/index.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1>Instagram giveaway winner</h1>
+      <div class="input-box">
+        <label for="nr-winners">Number of winners</label>
+        <input id="nr-winners" type="number" min="1" step="1" required />
+      </div>
+      <p>Please input the html markup from your page:</p>
+      <div>
+        <textarea id="html-markup"></textarea>
+        <div>Please select the markup for all comments as shown here:</div>
+        <div><img alt="Preview markup" src="assets/preview.png" /></div>
+      </div>
+
+      <button id="get-winner">Get winner</button>
+      <div id="competitors" class="competitors"></div>
+      <div id="list-competitors"></div>
+      <div id="winners" class="winners"></div>
+    </main>
+  </body>
+</html>
