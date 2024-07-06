@@ -6,17 +6,13 @@ document.addEventListener("DOMContentLoaded", () => {
 function handleGetWinnerClick() {
   const numberOfWinnersInput = document.getElementById("nr-winners");
   const numberOfWinners = parseInt(numberOfWinnersInput.value);
-
-  // Validate number of winners input
   if (numberOfWinners <= 0 || isNaN(numberOfWinners)) {
     alert("Please enter a valid number of winners (greater than zero).");
-    numberOfWinnersInput.focus(); // Focus back on the input for correction
+    numberOfWinnersInput.focus();
     return;
   }
 
   const htmlMarkup = document.getElementById("html-markup").value;
-
-  // Validate HTML markup input
   if (!htmlMarkup.trim()) {
     alert("Please input HTML Markup from Instagram page.");
     return;
@@ -24,18 +20,19 @@ function handleGetWinnerClick() {
 
   const ulMatches = htmlMarkup.match(/<ul\b[^>]*>(.*?)<\/ul>/gis) || [];
 
-  // Validate number of winners against total contestants
   const totalContestants = ulMatches.length;
   if (numberOfWinners > totalContestants) {
     alert(
       `Number of winners (${numberOfWinners}) cannot exceed total contestants (${totalContestants}).`
     );
-    numberOfWinnersInput.focus(); // Focus back on the input for correction
+    numberOfWinnersInput.focus();
+
     return;
   }
 
   displayTotalContestants(totalContestants);
   const contestants = extractContestants(ulMatches);
+  displayContestants(contestants);
   const winners = pickRandomWinners(contestants, numberOfWinners);
   displayWinners(winners);
 }
@@ -43,6 +40,14 @@ function handleGetWinnerClick() {
 function displayTotalContestants(count) {
   const resultBox = document.getElementById("competitors");
   resultBox.innerHTML = `Total contestants: <strong>${count}</strong>`;
+}
+
+function displayContestants(contestants) {
+  const listCompetitors = document.getElementById("list-competitors");
+  const contestantsHtml = contestants
+    .map((contestant) => `<strong>${contestant}</strong>`)
+    .join(", ");
+  listCompetitors.innerHTML = "Contestants: " + contestantsHtml;
 }
 
 function extractContestants(ulMatches, uniqueContestants) {
@@ -53,9 +58,9 @@ function extractContestants(ulMatches, uniqueContestants) {
   ulMatches.forEach((ul) => {
     let match;
     while ((match = aRegex.exec(ul))) {
-      const contestantHtml = match[0]; // Full HTML of the <a> tag
+      const contestantHtml = match[0];
       if (timeRegex.test(contestantHtml)) {
-        continue; // Skip if <time> tag with class is found
+        continue;
       }
 
       const contestant = match[1].replace(/<\/?[^>]+(>|$)/g, "").trim();
@@ -69,19 +74,17 @@ function extractContestants(ulMatches, uniqueContestants) {
 }
 
 function isValidContestant(contestant, uniqueContestants, existingContestants) {
-  // Check length and character validity
   if (
     contestant.length > 1 &&
     contestant.length < 30 &&
     /^[a-zA-Z0-9.]*$/.test(contestant)
   ) {
-    // Check uniqueness if required
     if (uniqueContestants && existingContestants.includes(contestant)) {
-      return false; // Not unique and should be skipped
+      return false;
     }
     return true;
   }
-  return false; // Does not meet criteria
+  return false;
 }
 
 function pickRandomWinners(contestants, numberOfWinners) {
